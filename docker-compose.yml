@@ -1,0 +1,60 @@
+version: "2.4"
+
+services:
+  server:
+    build: ./app
+    volumes:
+      - ./app:/app
+    env_file:
+      - .env
+    command: ["python", "server.py"]
+    ports:
+      - "8080:8080"
+
+  client1:
+    build: ./app
+    volumes:
+      - ./app:/app
+    environment:
+      - BANK_ID=1
+    env_file:
+      - .env
+    command: ["python", "client.py"]
+    depends_on:
+      - server  # Clients will start once the server container exists
+
+  client2:
+    build: ./app
+    volumes:
+      - ./app:/app
+    environment:
+      - BANK_ID=2
+    env_file:
+      - .env
+    command: ["python", "client.py"]
+    depends_on:
+      - server
+
+  client3:
+    build: ./app
+    volumes:
+      - ./app:/app
+    environment:
+      - BANK_ID=3
+    env_file:
+      - .env
+    command: ["python", "client.py"]
+    depends_on:
+      - server
+
+  client4:
+    build: ./app
+    volumes:
+      - ./app:/app
+    environment:
+      - BANK_ID=4
+    env_file:
+      - .env
+    command: ["python", "client.py"]
+    depends_on:
+      - server
