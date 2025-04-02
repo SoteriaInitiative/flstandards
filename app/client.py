@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 import logging
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
-from digitalocean_utils import do_utils
+from google_storage_utils import gs_utils
 
 # Custom weighted loss function
 def weighted_loss(y_true, y_pred):
@@ -34,7 +34,7 @@ logger = logging.getLogger()
 # Load transactions from DigitalOcean Spaces
 def load_transactions(file_name):
     try:
-        transactions = do_utils.download_json_data(file_name)
+        transactions = gs_utils.download_json_data(file_name)
         if transactions is None:
             logger.error("Failed to download transactions (received None)")
             return []
