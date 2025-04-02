@@ -5,8 +5,9 @@ services:
     build: ./app
     volumes:
       - ./app:/app
-    env_file:
-      - .env
+      - ./gcp-credentials:/credentials:ro  # Simple read-only mount
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/credentials/gcp-key.json
     command: ["python", "server.py"]
     ports:
       - "8080:8080"
@@ -15,22 +16,22 @@ services:
     build: ./app
     volumes:
       - ./app:/app
+      - ./gcp-credentials:/credentials:ro
     environment:
       - BANK_ID=1
-    env_file:
-      - .env
+      - GOOGLE_APPLICATION_CREDENTIALS=/credentials/gcp-key.json
     command: ["python", "client.py"]
     depends_on:
-      - server  # Clients will start once the server container exists
+      - server
 
   client2:
     build: ./app
     volumes:
       - ./app:/app
+      - ./gcp-credentials:/credentials:ro
     environment:
       - BANK_ID=2
-    env_file:
-      - .env
+      - GOOGLE_APPLICATION_CREDENTIALS=/credentials/gcp-key.json
     command: ["python", "client.py"]
     depends_on:
       - server
@@ -39,10 +40,10 @@ services:
     build: ./app
     volumes:
       - ./app:/app
+      - ./gcp-credentials:/credentials:ro
     environment:
       - BANK_ID=3
-    env_file:
-      - .env
+      - GOOGLE_APPLICATION_CREDENTIALS=/credentials/gcp-key.json
     command: ["python", "client.py"]
     depends_on:
       - server
@@ -51,10 +52,10 @@ services:
     build: ./app
     volumes:
       - ./app:/app
+      - ./gcp-credentials:/credentials:ro
     environment:
       - BANK_ID=4
-    env_file:
-      - .env
+      - GOOGLE_APPLICATION_CREDENTIALS=/credentials/gcp-key.json
     command: ["python", "client.py"]
     depends_on:
       - server

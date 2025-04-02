@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import os
 import logging
-from digitalocean_utils import do_utils
+from google_storage_utils import gs_utils
 
 # Initialize logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -142,7 +142,7 @@ def main():
         bank_name = f"Bank_{bank_id}"
         try:
             transactions = generate_transaction(bank_id=bank_id)
-            success = do_utils.upload_json_data(transactions, f"{bank_name}_transactions.json")
+            success = gs_utils.upload_json_data(transactions, f"{bank_name}_transactions.json")
             if success:
                 logger.info(f"Successfully uploaded transactions for {bank_name}")
             else:
