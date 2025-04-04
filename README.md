@@ -118,6 +118,7 @@ To find your way around please find a quick overview of the project structure.
 ```
 flstandards/
 ├── app/                        # Example federated learning model implementation
+├── gcp-credentials/            # Credentials for Google Cloud (you may need to create the folder)
 ├── documentation/              # Standard design documentation
 ├── standard/                   # Standard specification
 ├── README.md                   # This file
