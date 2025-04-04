@@ -113,6 +113,7 @@ X_train, X_test, y_train_local, y_test_local, train_indices, test_indices = trai
 y_test_global = df.loc[test_indices, "Transaction_global_label"].values
 
 # Scale currency amount (assuming min-max scaling)
+# TODO: Make more robust with MinMaxScaler
 X_train[:, -len(party_columns)-1] = (X_train[:, -len(party_columns)-1] - 10) / (50000 - 10)
 X_test[:, -len(party_columns)-1] = (X_test[:, -len(party_columns)-1] - 10) / (50000 - 10)
 
@@ -121,15 +122,28 @@ X_train = X_train.astype(np.float32)
 X_test = X_test.astype(np.float32)
 y_train, y_test_local = y_train_local.values, y_test_local.values
 
-# Define model specification:
-# Hidden layer design: 32 untuned and acceptable due to dropout definition
-# Activation hidden choice for hidden: Relu trains faster/compute efficiency
-# Dropout: Limit overfitting potential with untuned neuron in hidden layer
-# Output layer design: Signmoid for 2 class assignment scoring
-# Optimization metrics: custom wighted_loss function (see above) targeting AUC
-#                       AUC preferred because it is always a trade-off Pr/effectiveness alone
-#                       disregards the Re/efficiency and cost/time is a concern to stop bigger harm
-#                       before looking at smaller harm.
+# Model Architecture:
+#
+# Hidden Layer (32 neurons): A single hidden layer with 32 neurons provides
+# sufficient capacity to learn transaction and KYC data representations efficiently.
+# The number is intentionally conservative to prevent overfitting, balanced by dropout regularization.
+#
+# Activation Function (ReLU): Chosen for computational efficiency,
+# faster training convergence, and effectiveness in handling sparse inputs in OHE.
+#
+# Dropout (0.3): Applied to reduce the risk of overfitting given limited
+# tuning of the hidden layer size.
+#
+# Output Layer (Sigmoid): Used for binary classification (fraud vs. non-fraud),
+# facilitating probability-based decision-making.
+#
+# Loss Function (Custom Weighted Loss): Emphasizes correct classification of
+# fraud cases significantly (100x weighting), aligning model optimization with
+# the critical goal of minimizing high-impact false negatives.
+#
+# Performance Metric (AUC): Selected due to its balanced sensitivity to both
+# precision and recall, essential for fraud detection where timely identification
+# of significant threats outweighs exhaustive coverage of all minor cases.
 def create_model(input_dim):
     inputs = tf.keras.layers.Input(shape=(input_dim,))
     hidden = tf.keras.layers.Dense(32, activation="relu")(inputs)
@@ -164,9 +178,11 @@ class SimpleClient(fl.client.NumPyClient):
         local_auc = roc_auc_score(y_test_local, y_local_pred)
         
         # Global evaluation using y_test_global
+        # TODO: isnt this the same as model.predict(X_test) at the start of the function?
         y_global_pred = model.predict(X_test)
         global_auc = roc_auc_score(y_test_global, y_global_pred)
-        
+
+        # TODO: Is the local_auc the correct return because of the custom weighting or should this be loss?
         return local_auc, len(X_test), {"local_auc": local_auc, "global_auc": global_auc}
 
 if __name__ == "__main__":
