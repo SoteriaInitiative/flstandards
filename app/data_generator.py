@@ -60,22 +60,25 @@ def generate_transaction(n_samples: int = 5000, bank_id: int = 1) -> list:
         ]
 
         # Generate beneficiary details
+        # TODO: adapt to account/transaction_role model once account becomes array
         beneficiary = f"P{random.randint(1, 10)}"
         beneficiary_country = random.choice(COUNTRIES)
         
         # Generate timestamp (within last week)
         timestamp = int((now - timedelta(seconds=random.randint(0, 7*24*60*60))).timestamp() * 1000)
 
-        # Risk detection logic
+        # Sub-set of data standard used in model creation and generation parameters
+        # TODO: generate all the other fields and test again
         tx_context = {
             'type': tx_type,
             'role': role,
             'amount': amount,
-            'beneficiary_country': beneficiary_country,
+            'beneficiary_country': beneficiary_country, # TODO: adapt to account/transaction_role model
             'num_ubos': num_ubos,
-            'beneficiary': beneficiary
+            'beneficiary': beneficiary # TODO: adapt to account/transaction_role model
         }
 
+        # Setting positive labels
         global_label = int(
             (tx_type == "CASH" and role == "receiving" and amount > 20000) or
             (beneficiary_country == "RU") or
@@ -122,6 +125,7 @@ def generate_transaction(n_samples: int = 5000, bank_id: int = 1) -> list:
                     "country_code": country,
                     "parties": parties
                 },
+                # TODO: rework once account is an array
                 "transaction_beneficiary": beneficiary,
                 "transaction_beneficiary_country_code": beneficiary_country,
                 "local_label": local_label,
@@ -136,7 +140,8 @@ def generate_transaction(n_samples: int = 5000, bank_id: int = 1) -> list:
 def main():
     """Main function to generate and upload transaction data for all banks."""
     load_dotenv()
-    
+
+    # TODO: Include in .env
     NUM_BANKS = 4
     for bank_id in range(1, NUM_BANKS + 1):
         bank_name = f"Bank_{bank_id}"

@@ -8,6 +8,7 @@ services:
       - ./gcp-credentials:/credentials:ro  # Simple read-only mount
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/credentials/gcp-key.json
+      - NUM_ROUNDS=1
     command: ["python", "server.py"]
     ports:
       - "8080:8080"

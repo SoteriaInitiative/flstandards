@@ -4,7 +4,8 @@ from flwr.server.strategy import FedProx
 import numpy as np
 import logging
 
-NUM_ROUNDS = int(os.getenv("NUM_ROUNDS", 5))
+# In case that there is no .env run 5 rounds
+NUM_ROUNDS = int(os.getenv("NUM_ROUNDS"))
 MU = 0.01 
 
 # Set up logging
@@ -36,6 +37,7 @@ def aggregate_evaluate_metrics(results):
         "avg_global_test_auc": avg_global_test_auc,
     }
 
+# FedProx because converging heterogeneous data better
 def create_strategy():
     """Create and return the FedProx strategy with AUC aggregation."""
     return FedProx(

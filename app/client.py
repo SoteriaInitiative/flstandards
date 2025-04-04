@@ -11,7 +11,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from google_storage_utils import gs_utils
 
-# Custom weighted loss function
+# Custom weighted loss function: Overweight known true positives X 100
 def weighted_loss(y_true, y_pred):
     loss = K.binary_crossentropy(y_true, y_pred)  
     fraud_weight = tf.ones_like(y_true) * 1.0  # Shape: (batch_size, 1)
@@ -51,7 +51,7 @@ if not transactions:
 
 df = pd.json_normalize(transactions, sep="_")
 
-# Define possible party type-role combinations
+# Define possible party type-role combinations in preparation for categorical features in OHE
 POSSIBLE_PARTY_COMBINATIONS = [
     ("individual", "UBO"),
     ("entity", "UBO"),
@@ -121,7 +121,15 @@ X_train = X_train.astype(np.float32)
 X_test = X_test.astype(np.float32)
 y_train, y_test_local = y_train_local.values, y_test_local.values
 
-# Define model
+# Define model specification:
+# Hidden layer design: 32 untuned and acceptable due to dropout definition
+# Activation hidden choice for hidden: Relu trains faster/compute efficiency
+# Dropout: Limit overfitting potential with untuned neuron in hidden layer
+# Output layer design: Signmoid for 2 class assignment scoring
+# Optimization metrics: custom wighted_loss function (see above) targeting AUC
+#                       AUC preferred because it is always a trade-off Pr/effectiveness alone
+#                       disregards the Re/efficiency and cost/time is a concern to stop bigger harm
+#                       before looking at smaller harm.
 def create_model(input_dim):
     inputs = tf.keras.layers.Input(shape=(input_dim,))
     hidden = tf.keras.layers.Dense(32, activation="relu")(inputs)
