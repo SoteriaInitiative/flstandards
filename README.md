@@ -5,32 +5,30 @@ shared financial crime intelligence.
 
 As in every interaction standards smooth the way. Imagine the <b>internet without HTML</b> and international business without
 the English language. Crucially in the fight against financial crime standards help to:
-- keep costs down
-- focus innovation where it matter most
-- <b>safe lives</b> because detection of suspicious activity will become more effective<
-- faster to respond to emerging threats
-- more resilient to individual participant failures
+- reduce costs of sharing typologies and implementing technology
+- focus innovation where it matter most, such as algorithms and investigation support/case management
+- <b>safe lives</b> because detection of suspicious activity will become more effective
+- faster to respond to emerging threats as typologies and patters can be machine processed
+- more resilient to individual participant failures as detection is always against a shared knowledge of patterns
 
-With so many reasons....
+While sharing knowledge is vital, Soteria will not share actual detection patterns or models. The project
+does not target the most effective detection algorithm either. We believe that there is ample opportunity
+for vendors and financial institutions to design optimized systems. 
 
+Critically, an actual collectively learned detection model is (currently) not applicable for public consumption, 
+because such a model would make it far to easy for criminal to evade detection.
 
-- Data Standards
-- FL standads
-
-The standards are a minimum set of data elements for the objective but build on
-existing more comprehensive definitions such as:
-- [Financial Market Standard Body Customer Onboarding Standard](https://fmsb.com/wp-content/uploads/2024/12/20241217_Standard-for-COB_FINAL.pdf)
-- [SWIFT ISO 20022 Messaging Standard](https://www2.swift.com/knowledgecentre/publications/iso_20022_fnc_instit_get_st/4.0?topic=technical-implementation.htm) (free account required)
-
-To make the standards useful synthetic data generators will be provided and a reference
-implementation of a data editor will allow the encoding of actual financial crime patterns.
+The Soteria federated learning standards are building on: 
+- [IEEE Guide for Architectural Framework and Application of Federated Machine Learning](https://standards.ieee.org/ieee/3652.1/7453/)
+- [Advances and Open Problems in Federated Learning](https://arxiv.org/pdf/1912.04977) 
+- [Soteria Data Standards](https://github.com/SoteriaInitiative/coredata)
 
 
 # Getting started
 1. Clone the repo
 ```zsh
-git clone https://github.com/SoteriaInitiative/coredata.git
-cd coredata
+git clone https://github.com/SoteriaInitiative/flstandards.git
+cd flstandards
 ```
 
 2. Install the required dependencies
@@ -118,11 +116,10 @@ docker context use default
 # Project Structure
 To find your way around please find a quick overview of the project structure.
 ```
-coredata/
+flstandards/
+├── app/                        # Example federated learning model implementation
 ├── documentation/              # Standard design documentation
-├── example/                    # Example dataset implementing the standard
-├── implementation/             # Example data generator and pattern editor
-├── standard                    # Standard specification
+├── standard/                   # Standard specification
 ├── README.md                   # This file
 └── LICENSE                     # License file
 ```
