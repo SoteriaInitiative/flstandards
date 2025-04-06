@@ -36,7 +36,7 @@ cd flstandards
 brew install python
 brew install --cask docker
 brew install --cask google-cloud-sdk
-pip install -r requirements.txt
+pip install -r app/requirements.txt
 ```
 <details>
     <summary>💡Hint if you don't have 'brew':</summary>
@@ -69,7 +69,7 @@ If terminal prints ``Your system is ready to brew`` everything worked OK.
 </details>
 
 3. Provide application configuration and create a service account on GCP and add a JSON key with edit permissions.
-Safe the key to ``gcp-credentials/gcp-key.json`` - create the gcp-credentials folder if you don't have it.
+Safe the key to ``app/gcp-credentials/gcp-key.json`` - create the gcp-credentials folder if you don't have it.
 Next, provide the proper application configurations. 
 Create a ``.env`` file in the app root ``flstandards/app/`` with
 the following content:
