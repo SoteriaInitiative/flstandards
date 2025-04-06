@@ -93,7 +93,7 @@ gcloud storage buckets create gs://soteria-federated-learning \
 ```
 
 5. Run synthetic data generator and review results
-```bash
+```zsh
 python app/data_generator.py
 streamlit run app/app.py --server.port=8501 --server.address=127.0.0.1
 ```
