@@ -29,4 +29,6 @@ institutions might combined their sheared knowledge about particular threat scen
 to improve their collective detection capability. Critically, no personal identifiable data
 is shared but only abstract matrix data, weights, are shared with the server.
 
-![FedMlIllustration.svg](FedMLIllustration.svg)
+<div style="background:white; padding:10px; display:inline-block;">
+  <img src="FedMLIllustration.svg" alt="Federated ML Illustration" />
+</div>

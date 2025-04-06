@@ -93,7 +93,7 @@ streamlit run app/app.py --server.port=8501 --server.address=127.0.0.1
 <details>
     <summary>💡Hint how to read the data:</summary>
 
-Observe that each bank detections only a small set of transactiosn (red) but the vast majority
+Observe that each bank detects only a small set of transaction (red) but the vast majority
 of illicit transactions is not detected (yellow) because these are not part of the local knowledge/scenario pool.
 
 </details>
@@ -104,7 +104,7 @@ docker compose down --rmi all --volumes --remove-orphans
 docker compose up --build --force-recreate
 ```
 <details>
-    <summary>💡Hint incase of docker issues:</summary>
+    <summary>💡Hint in case of docker issues:</summary>
 
 If you are using multiple virtualization environments (e.g., colima) you may need to reset to the docker
 socket with the below steps: 
