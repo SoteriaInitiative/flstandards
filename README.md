@@ -6,7 +6,7 @@ shared financial crime intelligence.
 As in every interaction standards smooth the way. Imagine the <b>internet without HTML</b> and international business without
 the English language. Crucially in the fight against financial crime standards help to:
 - reduce costs of sharing typologies and implementing technology
-- focus innovation where it matter most, such as algorithms and investigation support/case management
+- focus innovation where it matter most, such algorithms, human investigation and support/case management
 - <b>safe lives</b> because detection of suspicious activity will become more effective
 - faster to respond to emerging threats as typologies and patters can be machine processed
 - more resilient to individual participant failures as detection is always against a shared knowledge of patterns
@@ -16,7 +16,7 @@ does not target the most effective detection algorithm either. We believe that t
 for vendors and financial institutions to design optimized systems. 
 
 Critically, an actual collectively learned detection model is (currently) not applicable for public consumption, 
-because such a model would make it far to easy for criminal to evade detection.
+because such a model would make it far too easy for criminal to evade detection.
 
 The Soteria federated learning standards are building on: 
 - [IEEE Guide for Architectural Framework and Application of Federated Machine Learning](https://standards.ieee.org/ieee/3652.1/7453/)
@@ -119,7 +119,7 @@ To find your way around please find a quick overview of the project structure.
 flstandards/
 ├── app/                        # Example federated learning model implementation
 ├── gcp-credentials/            # Credentials for Google Cloud (you may need to create the folder)
-├── documentation/              # Standard design documentation
+├── documentation/              # Use cases & design documentation
 ├── standard/                   # Standard specification
 ├── README.md                   # This file
 └── LICENSE                     # License file
