@@ -25,7 +25,8 @@ to a global model and then using that information for suspicious activity detect
 comprise the generic use case of this standard.
 
 The illustration below outlines the basic principles of how three financial 
-institutions might combined their sheared knowledge about particular threat scenarious
-to improve their collective detection capability.
+institutions might combined their sheared knowledge about particular threat scenarios
+to improve their collective detection capability. Critically, no personal identifiable data
+is shared but only abstract matrix data, weights, are shared with the server.
 
-![fincrime_fedml_illustration.png](fincrime_fedml_illustration.png)
+![FedMlIllustration.svg](FedMLIllustration.svg)
