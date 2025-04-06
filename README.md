@@ -84,6 +84,13 @@ GOOGLE_APPLICATION_CREDENTIALS=app/gcp-credentials/gcp-key.json
 gcloud auth login
 gcloud config set project <PROJECT_ID>
 ```
+Now create the storage bucket:
+```zsh
+gcloud storage buckets create gs://soteria-federated-learning \
+    --location=us-central1 \
+    --default-storage-class=STANDARD
+
+```
 
 5. Run synthetic data generator and review results
 ```bash
