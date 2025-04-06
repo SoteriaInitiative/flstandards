@@ -106,7 +106,7 @@ of illicit transactions is not detected (yellow) because these are not part of t
 </details>
 
 6. Launch Federated Learning stack
-```bash
+```zsh
 docker compose down --rmi all --volumes --remove-orphans
 docker compose up --build --force-recreate
 ```
