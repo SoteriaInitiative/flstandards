@@ -18,5 +18,14 @@ The generic high-level use case is outlined below and follows the guidelines pub
 
 <b>Scenario:</b> Intelligence (input data and investigation outcome) available
 at one system is made available and combined suitably with information
-at an other system to increase the likelihood of detection for activity 
-that each individual system has limited or no knowledge about.
+from an other system to increase the likelihood of detection for activity 
+that each individual system has limited or no knowledge about. The protocols
+and facilities to exchange the locally trained model data, how to combine these
+to a global model and then using that information for suspicious activity detection 
+comprise the generic use case of this standard.
+
+The illustration below outlines the basic principles of how three financial 
+institutions might combined their sheared knowledge about particular threat scenarious
+to improve their collective detection capability.
+
+![fincrime_fedml_illustration.png](fincrime_fedml_illustration.png)
