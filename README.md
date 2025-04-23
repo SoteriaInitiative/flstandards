@@ -11,12 +11,24 @@ the English language. Crucially in the fight against financial crime standards h
 - faster to respond to emerging threats as typologies and patters can be machine processed
 - more resilient to individual participant failures as detection is always against a shared knowledge of patterns
 
+Even though the current demonstration is severely limited and largely work in progress, 
+the current release already highlights the power of federated learning for financial crime prevention
+(metrics below are expressed in AuC - Area under the Curve):
+
+| Bank - Detection Focus                | Local Model Detection Quality | Federated Learning Detection Quality |
+|---------------------------------------|-------------------------------|--------------------------------------|
+| Bank 1 - Large Cash Deposits 💰         | 0.5735             | 0.8739                          |
+| Bank 2 – High-Risk Transactions 🏴‍☠️ | 0.5738                   | 0.8814                           |
+| Bank 3 - Many UBOs 🤼                 | 0.6689                  | 0.8660                         |
+| Bank 4 - Watchlist Entities 📋        | 0.6977                 | 0.8820                         |
+> NOTE: Differences in federated learning metrics are a result of individuals transaction characteristics.
+
 While sharing knowledge is vital, Soteria will not share actual detection patterns or models. The project
 does not target the most effective detection algorithm either. We believe that there is ample opportunity
 for vendors and financial institutions to design optimized systems. 
 
 Critically, an actual collectively learned detection model is (currently) not applicable for public consumption, 
-because such a model would make it far too easy for criminal to evade detection.
+because such a model would make it far too easy for criminals to evade detection.
 
 The Soteria federated learning standards are building on: 
 - [IEEE Guide for Architectural Framework and Application of Federated Machine Learning](https://standards.ieee.org/ieee/3652.1/7453/)
@@ -24,7 +36,7 @@ The Soteria federated learning standards are building on:
 - [Soteria Data Standards](https://github.com/SoteriaInitiative/coredata)
 
 
-# Getting started
+# 🕹️ Getting started
 ### 1. Clone the repo
 ```zsh
 git clone https://github.com/SoteriaInitiative/flstandards.git
@@ -163,7 +175,7 @@ how many rounds of training to perform. It is set to one round as the demonstrat
 with new detection patterns currently.
 
 
-# Project structure
+# 🗄️ Project structure
 To find your way around please find a quick overview of the project structure.
 ```
 flstandards/
@@ -174,7 +186,7 @@ flstandards/
 ├── README.md                   # This file
 └── LICENSE                     # License file
 ```
-# Contributing
+# 🛠️ Contributing
 Contributions are welcome! To get started:
 
 1. Fork the project. 
@@ -183,6 +195,25 @@ Contributions are welcome! To get started:
 3. Commit your changes: git commit -m 'Commit message'. 
 4. Push to your branch: git push origin feat/<issue-#>-<change>. 
 5. Open a pull request in the main repository.
+
+# 🚀 Features
+
+This release includes the following key features:
+- Synthetic data generation in alignment with [Soteria Initiative Data Standards](https://github.com/SoteriaInitiative/coredata)
+- Four simulated financial institutions with unique scenario knowledge
+- Example scenarios for high-risk country transaction, large deposits, watch lists and large number of UBOs
+- A Flower based client/server model exchange model
+- A local model training and inference client
+- A central server to receive local partial models and to distribute global models for inference
+
+# ⚠️ Limitations:
+Please consider the following limitations or known issues:
+- The [Soteria Initiative Data Standards](https://github.com/SoteriaInitiative/coredata) are not included as a component, but rather an integral component because of an error in the account element specification, this is targeted for separation next
+- Clients currently cannot run outside of the lab environment, which will be enable in one of the next iterations
+- By design the demonstrator is limited to just a few detection scenarios.
+- Model limitations to perceptron and simple embeddings, as tuning this (e.g., using GNN) would be outside of the standard work in scope of the initiative and more of a model implementation aspect.
+- There are no differential privacy or noise insertion considerations included.
+- The system is not using secured connections and encryption currently.
 # License
 This project is licensed under the MIT License.
 Feel free to use, modify, and distribute this project as per the terms of the license.
