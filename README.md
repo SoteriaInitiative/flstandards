@@ -109,7 +109,7 @@ gcloud storage buckets create gs://soteria-federated-learning \
     <summary>💡Hint if bucket creation fails:</summary>
 
 You may have created a bucket with the same name. Verify in the GCP console if the
-bucket already exists and if it does and you like to retain the bucket rename the bucket 
+bucket already exists and if it does, and you like to retain the bucket, rename the bucket 
 in the ```gcloud``` command above and in the ```.env``` file.
 
 </details>
@@ -209,9 +209,9 @@ This release includes the following key features:
 # ⚠️ Limitations:
 Please consider the following limitations or known issues:
 - The [Soteria Initiative Data Standards](https://github.com/SoteriaInitiative/coredata) are not included as a component, but rather an integral component because of an error in the account element specification, this is targeted for separation next
-- Clients currently cannot run outside of the lab environment, which will be enable in one of the next iterations
+- Clients currently cannot run outside the lab environment, which will be enabled in one of the next iterations
 - By design the demonstrator is limited to just a few detection scenarios.
-- Model limitations to perceptron and simple embeddings, as tuning this (e.g., using GNN) would be outside of the standard work in scope of the initiative and more of a model implementation aspect.
+- Model limitations to perceptron and simple embeddings, as tuning this (e.g., using GNN) would be outside the standard work in scope of the initiative and more of a model implementation aspect.
 - There are no differential privacy or noise insertion considerations included.
 - The system is not using secured connections and encryption currently.
 # License
