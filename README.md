@@ -25,13 +25,13 @@ The Soteria federated learning standards are building on:
 
 
 # Getting started
-1. Clone the repo
+### 1. Clone the repo
 ```zsh
 git clone https://github.com/SoteriaInitiative/flstandards.git
 cd flstandards
 ```
 
-2. Install the required dependencies
+### 2. Install the required dependencies
 ```zsh
 brew install python
 brew install --cask docker
@@ -59,7 +59,7 @@ echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
 eval "$(/opt/homebrew/bin/brew shellenv)"
 ```
 
-You can verify the instalation by typing:
+You can verify the installation by typing:
 ```zsh
 brew doctor
 ```
@@ -68,48 +68,67 @@ If terminal prints ``Your system is ready to brew`` everything worked OK.
 
 </details>
 
-3. Provide application configuration and create a service account on GCP and add a JSON key with edit permissions.
-Safe the key to ``app/gcp-credentials/gcp-key.json`` - create the gcp-credentials folder if you don't have it.
+### 3. Setting project configuration & credentials
+ 
+Provide application configuration and create a service account on GCP and add a JSON key with edit permissions.
+Safe the key in the project root to ``gcp-credentials/gcp-key.json`` - create the gcp-credentials folder if you don't have it.
 Next, provide the proper application configurations. 
-Create a ``.env`` file in the app root ``flstandards/app/`` with
+Create a ``.env`` file in the app root ``app/`` with
 the following content:
 ```text
 NUM_ROUNDS=1
 GCS_BUCKET_NAME=soteria-federated-learning
-GOOGLE_APPLICATION_CREDENTIALS=app/gcp-credentials/gcp-key.json
+GOOGLE_APPLICATION_CREDENTIALS=gcp-credentials/gcp-key.json
 ```
 
-4. Set the Google Cloud parameters
+### 4. Set the Google Cloud parameters
 ```zsh
 gcloud auth login
 gcloud config set project <PROJECT_ID>
 ```
-Now create the storage bucket:
+Now create the storage bucket specified in the ```.env``` above (only required once):
 ```zsh
 gcloud storage buckets create gs://soteria-federated-learning \
     --location=us-central1 \
     --default-storage-class=STANDARD
 
 ```
+<details>
+    <summary>💡Hint if bucket creation fails:</summary>
 
-5. Run synthetic data generator and review results
+You may have created a bucket with the same name. Verify in the GCP console if the
+bucket already exists and if it does and you like to retain the bucket rename the bucket 
+in the ```gcloud``` command above and in the ```.env``` file.
+
+</details>
+
+### 5. Run synthetic data generator:
+
+The following assumes that you are in the project root. If you run ```ls``` you should see the files listed in the
+[Project Structure](#Project Structure). In that directory run:
 ```zsh
 python app/data_generator.py
+```
+Now review the synthetic data that has been generated:
+```zsh
 streamlit run app/app.py --server.port=8501 --server.address=127.0.0.1
 ```
+
 <details>
-    <summary>💡Hint how to read the data:</summary>
+    <summary>💡Hint how to interpret the data:</summary>
 
 Observe that each bank detects only a small set of transaction (red) but the vast majority
 of illicit transactions is not detected (yellow) because these are not part of the local knowledge/scenario pool.
 
 </details>
 
-6. Launch Federated Learning stack
+### 6. Launch federated learning stack
+Ensure that you have started your docker software and then run the federated learning demo:
 ```zsh
 docker compose down --rmi all --volumes --remove-orphans
 docker compose up --build --force-recreate
 ```
+To stop the demonstration press ```ctrl-c``` once to allow for resource shutdown and twice to force the exit.
 <details>
     <summary>💡Hint in case of docker issues:</summary>
 
@@ -120,7 +139,31 @@ docker context use default
 ```
 </details>
 
-# Project Structure
+### 7. Observe the model training and evaluation
+A lot will scroll through the screen, especially now while the demonstration software is in its early stages. 
+The guide below provides and indication what to watch out for. 
+Observe specifically after the building steps have completed 
+(when ```[+] Building``` becomes ```[+] Running```):
+- One server (```server-1```) has been created
+- Four clients (```flstandards-client1``` to ```flstandards-client4```) were created 
+- The server requests local models from the simulated banks (```Requesting initial parameters```)
+- The clients load the previously generated data (```Successfully downloaded data from Bank...```)
+- Each client trains a local model (```Model created```)
+- The server uses the first local model to initialize & start model training (```FL starting```, ```fit_round 1```)
+- All the clients submit their local models (```━.../step```)
+- The server completes local model collection & aggregates models (```fit_round 1 received```, ```Aggregated local training AUC```)
+- The server runs a model evaluation for the first round (```evaluate_round 1```)
+- Results of the aggregated loc model are printed (```Aggregated local test AUC```)
+- Results of the federated learning for the global model are printed (```Aggregated global test AUC```)
+
+You can compare the AUC for local and global model to get an indication how well the federated learning performed.
+
+Test and training data splits are automatic and the parameter ```NUM_ROUNDS``` in the ```.env``` file controls
+how many rounds of training to perform. It is set to one round as the demonstrator does not regenerate more transactions
+with new detection patterns currently.
+
+
+# Project structure
 To find your way around please find a quick overview of the project structure.
 ```
 flstandards/
@@ -135,10 +178,11 @@ flstandards/
 Contributions are welcome! To get started:
 
 1. Fork the project. 
-2. Create a new feature branch: git checkout -b feature/<new-feature>. 
-3. Commit your changes: git commit -m 'Add some feature'. 
-4. Push to your branch: git push origin feature/<new-feature>. 
-5. Open a Pull Request in the main repository.
+2. Create an issue to work on at git-hub
+2. Create a new feat, doc or std branch (replace feat with doc or std): git checkout -b feat/<issue-#>-<change>. 
+3. Commit your changes: git commit -m 'Commit message'. 
+4. Push to your branch: git push origin feat/<issue-#>-<change>. 
+5. Open a pull request in the main repository.
 # License
 This project is licensed under the MIT License.
 Feel free to use, modify, and distribute this project as per the terms of the license.
