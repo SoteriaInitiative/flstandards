@@ -1,6 +1,6 @@
 # About the Project
 The Federate Learning Standards are part of the [Soteria Initiative](https://soteria-initiative.org/) to establish common financial
-crime AI and specifically federated learning standards and includes conventions to train, exchange an aggregate 
+crime AI and specifically federated learning standards and includes conventions to train, exchange and aggregate 
 shared financial crime intelligence.
 
 As in every interaction standards smooth the way. Imagine the <b>internet without HTML</b> and international business without
