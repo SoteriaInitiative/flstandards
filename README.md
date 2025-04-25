@@ -214,10 +214,10 @@ Please consider the following limitations or known issues:
 - Model limitations to perceptron and simple embeddings, as tuning this (e.g., using GNN) would be outside the standard work in scope of the initiative and more of a model implementation aspect.
 - There are no differential privacy or noise insertion considerations included.
 - The system is not using secured connections and encryption currently.
-# License
+# 📄 License
 This project is licensed under the MIT License.
 Feel free to use, modify, and distribute this project as per the terms of the license.
-# Contact
+# 📬 Contact
 Project Maintainer: Soteria Initiative – @SoteriaInitiative – contact@soteria-initiative.org
 Repository: SoteriaInitiative/coredata
 For general inquiries or discussion, please open an issue.
