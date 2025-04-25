@@ -6,7 +6,7 @@ shared financial crime intelligence.
 As in every interaction standards smooth the way. Imagine the <b>internet without HTML</b> and international business without
 the English language. Crucially in the fight against financial crime standards help to:
 - reduce costs of sharing typologies and implementing technology
-- focus innovation where it matter most, such algorithms, human investigation and support/case management
+- focus innovation where it matter most, such as algorithms, human investigation and support/case management
 - <b>safe lives</b> because detection of suspicious activity will become more effective
 - faster to respond to emerging threats as typologies and patters can be machine processed
 - more resilient to individual participant failures as detection is always against a shared knowledge of patterns
