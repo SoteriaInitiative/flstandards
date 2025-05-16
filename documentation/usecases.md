@@ -1,29 +1,79 @@
-# User Case Collection
+# Use Case Collection
 In order to protect the integrity of the effort the specific use case
-application is private.
+application is private. However, two braod use cases are adressed by [flstandards](https://github.com/SoteriaInitiative/flstandards/) in
+combination with appropriate [coredata](https://github.com/SoteriaInitiative/coredata) standards. The use cases are described below
+and target broad categories of financial crime typologies.
 
-The generic high-level use case is outlined below and follows the guidelines published by [Figma](https://www.figma.com/resource-library/what-is-a-use-case/).
+A summary of [covered typologies](##TypologyCoverage) by these two use cases is provided below the use case description.
 
-<b>Primary actor:</b> Multiple suspicious activity detection systems
+## Use Case Description
+The generic high-level use cases are outlined below and follows the guidelines published by [Figma](https://www.figma.com/resource-library/what-is-a-use-case/).
 
-<b>Secondary actor:</b> Compliance officer or law enforcement agency
+### Use Case 1: FedML – Increase Detection Resiliency Through Shared Intelligence (Local Lack of Knowledge)
 
-<b>Goals:</b> Identify suspicious activity of which each individual system has only partial information and privacy of data residing at each system is maintained.
+<b>Primary Actor</b>: AML detection system
 
-<b>Stakeholders:</b> Regulators, law enforcement, victims and clients
+<b>Secondary Actor</b>: Compliance officer
 
-<b>Preconditions:</b> Intelligence sharing among systems in a standardized data format and joint regulatory filing possibility.
+<b>Goals</b>: Identify suspicious activity at Firm A using knowledge from Firm B
 
-<b>Triggers:</b>  Transaction, kyc activity or parts thereof
+<b>Stakeholders</b>: Regulators, law enforcement, victims, clients
 
-<b>Scenario:</b> Intelligence (input data and investigation outcome) available
-at one system is made available and combined suitably with information
-from an other system to increase the likelihood of detection for activity 
-that each individual system has limited or no knowledge about. The protocols
-and facilities to exchange the locally trained model data, how to combine these
-to a global model and then using that information for suspicious activity detection 
-comprise the generic use case of this standard.
+<b>Preconditions</b>:
 
+- Firm B has confirmed certain client behaviors as money laundering through true positive labels.
+- This information is abstracted into a machine learning model (e.g., weight matrix) and shared.
+
+<b>Trigger</b>:
+
+- A transaction or KYC event at Firm A resembles activity previously confirmed as suspicious at Firm B.
+
+<b>Scenario</b>:
+A client at Firm B has been confirmed to be involved in money laundering. Firm B labels these behaviors and trains a local machine learning model. Firm A has similar clients with related behaviors but no confirmed case history. By incorporating Firm B’s trained model (or a federated aggregation of such models), Firm A’s detection system becomes more sensitive to suspicious activity it would otherwise not have flagged due to its local data limitations.
+
+### Use Case 2: FedML – Detect Money Laundering Activity Deliberately Distributed Between Market Participants (Threshold Evasion, Layer & Splits, Locally Incomplete Transactions)
+
+<b>Primary Actor</b>: AML and sanctions control evasion detection system
+
+<b>Secondary Actor</b>: Compliance officer
+
+<b>Goals</b>: Detect activity that spans multiple firms and is hidden by fragmentation
+
+<b>Stakeholders</b>: Regulators, law enforcement, victims, clients
+
+<b>Preconditions</b>: None
+
+<b>Trigger</b>:
+
+- A transaction or KYC update is detected, but the context is locally incomplete.
+
+<b>Scenario</b>:
+A malicious actor deliberately structures transactions across multiple institutions to avoid triggering any one firm’s detection threshold (e.g., avoiding €10,000 transaction limits). At Firm A, the actor presents one identity and address; at Firm B, another. Firm C, a recipient institution, sees legitimate-looking transactions and has no reason to investigate. However, when the information from all three firms is aggregated — e.g., through federated learning or collaborative intelligence mechanisms — it becomes clear that the customer’s activities and counterparties interconnect in a suspicious pattern.
+
+## Typology Coverage
+
+| Typology                                                        | Use Case 1: Shared Intelligence (Local Lack of Knowledge) | Use Case 2: Distributed Activity (Threshold Evasion, Layering) | Coverage Status         | Reasoning |
+|------------------------------------------------------------------|------------------------------------------------------------|------------------------------------------------------------------|--------------------------|-----------|
+| Structuring / Smurfing                                           | ✅                                                          | ✅                                                                | **Fully Covered**        | Detected through cross-firm volume and frequency aggregation |
+| Dual/Synthetic Identity Fraud                                    | ✅                                                          | ✅                                                                | **Fully Covered**        | Identity mismatches across firms can be learned |
+| Networked Laundering / Client Coordination                       | ✅                                                          | ✅                                                                | **Fully Covered**        | Federated learning identifies behavioral networks |
+| Trade-Based Money Laundering (TBML)                              | ✅                                                          | ✅                                                                | **Fully Covered**        | Trade metadata enables pattern learning for price/goods mismatch |
+| Benign Business Fronts / Co-mingling                             | ✅                                                          | ✅                                                                | **Fully Covered**        | High-volume low-risk appearances exposed by shared detection patterns |
+| Use of Payment Alternatives (e.g. gift cards, mobile wallets)    | ✅                                                          | ✅                                                                | **Fully Covered**        | Covered via harmonized payment metadata across networks |
+| Sanctions Evasion via Indirect Channels                          | ✅                                                          | ✅                                                                | **Fully Covered**        | Shared customer profiles reveal indirect relationships |
+| Money Mules / Unwitting Intermediaries                           | ✅                                                          | ✅                                                                | **Fully Covered**        | Repeated low-value/frequent transactions across clients become visible |
+| Professional Launderers / Nominee Use                            | ✅                                                          | ✅                                                                | **Fully Covered**        | Shared intelligence reveals usage patterns and role clustering |
+| Entity Ownership Obfuscation (Shells, Trusts)                    | ⚠️ Partial                                                 | ✅                                                                | **Partially Covered**    | Use Case 2 covers this if ownership data exists in core; Use Case 1 less so |
+| Nested Correspondent Banking                                     | ⚠️ Partial                                                 | ⚠️ Partial                                                        | **Partially Covered**    | If nested relationships are disclosed or visible through transaction paths |
+| Abuse of DeFi Mechanisms (Mixers, Cross-chain Swaps)             | ✅                                                          | ✅                                                                | **Fully Covered**        | If DeFi providers participate and provide structured metadata |
+| Jurisdictional Arbitrage (Use of Non-Cooperative Regimes)        | ✅                                                          | ✅                                                                | **Fully Covered***       | *Conditional on visibility of in/outflows with those jurisdictions* |
+| Insider Facilitation / Internal Complicity                       | ❌                                                          | ❌                                                                | **Not Covered**          | Requires internal controls, whistleblowers, or audit — beyond modeling scope |
+| Charitable Entity Abuse / Non-Profit Laundering                  | ⚠️ Partial                                                 | ⚠️ Partial                                                        | **Partially Covered**    | May need domain heuristics; only captured if volumes, flows, and ownership structures are anomalous |
+| Physical Asset Laundering (Art, Real Estate, Luxury Goods)       | ⚠️ Partial                                                 | ⚠️ Partial                                                        | **Partially Covered**    | Detected only if purchases are captured via financial flows and metadata |
+| Complex Legal Structures & Instrument-Based Layering             | ❌                                                          | ⚠️ Partial                                                        | **Partially Covered**    | Legal instrument metadata may not be standard in core financial transaction records |
+
+
+## System Context
 The illustration below outlines the basic principles of how three financial 
 institutions might combined their sheared knowledge about particular threat scenarios
 to improve their collective detection capability. Critically, no personal identifiable data
