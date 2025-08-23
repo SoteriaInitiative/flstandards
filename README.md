@@ -158,6 +158,24 @@ docker context use default
 ```
 </details>
 
+#### Run server and clients locally (without Docker)
+If Docker is unavailable, the stack can run directly on the host. Start the server:
+
+```zsh
+NUM_ROUNDS=1 SERVER_ADDRESS=localhost:8080 python app/server.py
+```
+
+Then, in a separate shell, launch the four clients:
+
+```zsh
+for i in 1 2 3 4; do \
+    SERVER_ADDRESS=localhost:8080 BANK_ID=$i python app/client.py & \
+done
+wait
+```
+
+Use `localhost` (not `127.0.0.1`) for `SERVER_ADDRESS` to avoid gRPC proxy errors.
+
 ### 7. Observe the model training and evaluation
 A lot will scroll through the screen, especially now while the demonstration software is in its early stages. 
 The guide below provides and indication what to watch out for. 
