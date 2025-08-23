@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 import logging
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
-from google_storage_utils import gs_utils
+from goaml_loader import load_goaml_transactions
 
 # Custom weighted loss function: Overweight known true positives X 100
 def weighted_loss(y_true, y_pred):
@@ -25,27 +25,26 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 # Environment variables
 BANK_ID = os.getenv("BANK_ID", "1")
 SERVER_ADDRESS = os.getenv("SERVER_ADDRESS", "server:8080")
-TRANSACTIONS_FILE = f"Bank_{BANK_ID}_transactions.json"
 
 # Logging setup
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
 
-# Load transactions from DigitalOcean Spaces
-def load_transactions(file_name):
+# Load transactions from goAML XML files
+def load_transactions():
     try:
-        transactions = gs_utils.download_json_data(file_name)
-        if transactions is None:
-            logger.error("Failed to download transactions (received None)")
+        transactions = load_goaml_transactions(BANK_ID)
+        if not transactions:
+            logger.error("No transactions loaded from goAML XML")
             return []
-        logger.info(f"Loaded {len(transactions)} transactions from DigitalOcean.")
+        logger.info(f"Loaded {len(transactions)} transactions from goAML XML files.")
         return transactions
     except Exception as e:
         logger.error(f"Error loading transactions: {e}")
         return []
 
 # Load data
-transactions = load_transactions(TRANSACTIONS_FILE)
+transactions = load_transactions()
 if not transactions:
     raise SystemExit("Failed to load transaction data - exiting")
 
