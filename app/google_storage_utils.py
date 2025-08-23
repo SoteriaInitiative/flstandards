@@ -54,28 +54,36 @@ class GoogleStorageUtils:
     def storage_client(self):
         """Lazy initialization of Google Cloud Storage client"""
         if self._storage_client is None:
-            if self.SERVICE_ACCOUNT_INFO:
-                # Initialize using service account details provided in env
-                self._storage_client = storage.Client.from_service_account_info(
-                    self.SERVICE_ACCOUNT_INFO
-                )
-            elif self.SERVICE_ACCOUNT_KEY:
-                # Initialize with service account credentials file
-                self._storage_client = storage.Client.from_service_account_json(
-                    self.SERVICE_ACCOUNT_KEY
-                )
-            else:
-                # Initialize with default credentials
-                self._storage_client = storage.Client()
-            logger.info("Google Cloud Storage client initialized")
+            try:
+                if self.SERVICE_ACCOUNT_INFO:
+                    # Initialize using service account details provided in env
+                    self._storage_client = storage.Client.from_service_account_info(
+                        self.SERVICE_ACCOUNT_INFO
+                    )
+                elif self.SERVICE_ACCOUNT_KEY:
+                    # Initialize with service account credentials file
+                    self._storage_client = storage.Client.from_service_account_json(
+                        self.SERVICE_ACCOUNT_KEY
+                    )
+                else:
+                    # Initialize with default credentials
+                    self._storage_client = storage.Client()
+                logger.info("Google Cloud Storage client initialized")
+            except Exception as e:
+                logger.warning(f"Google Cloud Storage client unavailable: {e}")
+                self._storage_client = None
         return self._storage_client
 
     def upload_json_data(self, data, file_name):
         """Upload JSON data to Google Cloud Storage"""
+        client = self.storage_client
+        if client is None:
+            logger.warning("Skipping upload; Google Cloud credentials not configured")
+            return False
         try:
-            bucket = self.storage_client.bucket(self.BUCKET_NAME)
+            bucket = client.bucket(self.BUCKET_NAME)
             blob = bucket.blob(file_name)
-            
+
             # Upload as JSON string
             blob.upload_from_string(
                 data=json.dumps(data),
@@ -89,10 +97,14 @@ class GoogleStorageUtils:
 
     def download_json_data(self, file_name):
         """Download JSON data from Google Cloud Storage"""
+        client = self.storage_client
+        if client is None:
+            logger.warning("Skipping download; Google Cloud credentials not configured")
+            return None
         try:
-            bucket = self.storage_client.bucket(self.BUCKET_NAME)
+            bucket = client.bucket(self.BUCKET_NAME)
             blob = bucket.blob(file_name)
-            
+
             # Download as string and parse JSON
             data = json.loads(blob.download_as_text())
             logger.info(f"Successfully downloaded data from {file_name}")

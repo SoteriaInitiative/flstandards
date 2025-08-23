@@ -128,6 +128,8 @@ The following assumes that you are in the project root. If you run ```ls``` you 
 ```zsh
 python app/data_generator.py
 ```
+If Google Cloud credentials are not configured, the script still generates the
+JSON files locally but skips uploading them to GCS.
 Now review the synthetic data that has been generated:
 ```zsh
 streamlit run app/app.py --server.port=8501 --server.address=127.0.0.1
