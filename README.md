@@ -86,16 +86,18 @@ Provide application configuration and create a service account on GCP with a JSO
 You can supply the credentials to the application in two ways:
 
 1. **Path to key file** – Save the key in ``gcp-credentials/gcp-key.json`` (create the folder if necessary) and set ``GOOGLE_APPLICATION_CREDENTIALS`` to that path.
-2. **Direct JSON** – Set ``GCS_SERVICE_ACCOUNT_JSON`` to the JSON content of the service-account key.
+2. **Environment variables** – Export the individual service-account fields (``GCP_PROJECT_ID``, ``GCP_PRIVATE_KEY``\, ``GCP_CLIENT_EMAIL``\, etc.).
 
 Create a ``.env`` file in the project root with at least the following content:
 ```text
 NUM_ROUNDS=1
 GCS_BUCKET_NAME=soteria-federated-learning
 # Either provide a path to the key file
-GOOGLE_APPLICATION_CREDENTIALS=gcp-credentials/gcp-key.json
-# or supply the JSON directly
-# GCS_SERVICE_ACCOUNT_JSON={...}
+# GOOGLE_APPLICATION_CREDENTIALS=gcp-credentials/gcp-key.json
+# or supply the fields directly
+# GCP_PROJECT_ID=your-project
+# GCP_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\n...
+# GCP_CLIENT_EMAIL=your-service-account@your-project.iam.gserviceaccount.com
 ```
 
 ### 4. Set the Google Cloud parameters

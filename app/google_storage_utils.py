@@ -15,11 +15,40 @@ class GoogleStorageUtils:
     def __init__(self):
         # Google Cloud Storage bucket name
         self.BUCKET_NAME = os.getenv("GCS_BUCKET_NAME", "soteria-federated-learning")
-        # Optionally pass service account info as JSON through env var
-        self.SERVICE_ACCOUNT_INFO = os.getenv("GCS_SERVICE_ACCOUNT_JSON")
+        # Collect individual service account fields from environment
+        self.SERVICE_ACCOUNT_INFO = self._build_service_account_info()
         # Fallback to path to service account key file
         self.SERVICE_ACCOUNT_KEY = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
         self._storage_client = None
+
+    def _build_service_account_info(self):
+        """Gather service-account credentials from environment variables."""
+        info = {
+            "type": os.getenv("GCP_TYPE", "service_account"),
+            "project_id": os.getenv("GCP_PROJECT_ID"),
+            "private_key_id": os.getenv("GCP_PRIVATE_KEY_ID"),
+            "private_key": os.getenv("GCP_PRIVATE_KEY"),
+            "client_email": os.getenv("GCP_CLIENT_EMAIL"),
+            "client_id": os.getenv("GCP_CLIENT_ID"),
+            "auth_uri": os.getenv(
+                "GCP_AUTH_URI", "https://accounts.google.com/o/oauth2/auth"
+            ),
+            "token_uri": os.getenv(
+                "GCP_TOKEN_URI", "https://oauth2.googleapis.com/token"
+            ),
+            "auth_provider_x509_cert_url": os.getenv(
+                "GCP_AUTH_PROVIDER_CERT_URL",
+                "https://www.googleapis.com/oauth2/v1/certs",
+            ),
+            "client_x509_cert_url": os.getenv("GCP_CLIENT_CERT_URL"),
+        }
+
+        # Only return the dict if mandatory fields are present
+        mandatory = ["project_id", "private_key", "client_email"]
+        if all(info.get(field) for field in mandatory):
+            info["private_key"] = info["private_key"].replace("\\n", "\n")
+            return info
+        return None
 
     @property
     def storage_client(self):
@@ -27,9 +56,8 @@ class GoogleStorageUtils:
         if self._storage_client is None:
             if self.SERVICE_ACCOUNT_INFO:
                 # Initialize using service account details provided in env
-                credentials_info = json.loads(self.SERVICE_ACCOUNT_INFO)
                 self._storage_client = storage.Client.from_service_account_info(
-                    credentials_info
+                    self.SERVICE_ACCOUNT_INFO
                 )
             elif self.SERVICE_ACCOUNT_KEY:
                 # Initialize with service account credentials file
