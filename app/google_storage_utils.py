@@ -15,7 +15,9 @@ class GoogleStorageUtils:
     def __init__(self):
         # Google Cloud Storage bucket name
         self.BUCKET_NAME = os.getenv("GCS_BUCKET_NAME", "soteria-federated-learning")
-        # Path to service account key file (if using service account auth)
+        # Optionally pass service account info as JSON through env var
+        self.SERVICE_ACCOUNT_INFO = os.getenv("GCS_SERVICE_ACCOUNT_JSON")
+        # Fallback to path to service account key file
         self.SERVICE_ACCOUNT_KEY = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
         self._storage_client = None
 
@@ -23,8 +25,14 @@ class GoogleStorageUtils:
     def storage_client(self):
         """Lazy initialization of Google Cloud Storage client"""
         if self._storage_client is None:
-            if self.SERVICE_ACCOUNT_KEY:
-                # Initialize with service account credentials
+            if self.SERVICE_ACCOUNT_INFO:
+                # Initialize using service account details provided in env
+                credentials_info = json.loads(self.SERVICE_ACCOUNT_INFO)
+                self._storage_client = storage.Client.from_service_account_info(
+                    credentials_info
+                )
+            elif self.SERVICE_ACCOUNT_KEY:
+                # Initialize with service account credentials file
                 self._storage_client = storage.Client.from_service_account_json(
                     self.SERVICE_ACCOUNT_KEY
                 )

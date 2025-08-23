@@ -82,15 +82,20 @@ If terminal prints ``Your system is ready to brew`` everything worked OK.
 
 ### 3. Setting project configuration & credentials
  
-Provide application configuration and create a service account on GCP and add a JSON key with edit permissions.
-Safe the key in the project root to ``gcp-credentials/gcp-key.json`` - create the gcp-credentials folder if you don't have it.
-Next, provide the proper application configurations. 
-Create a ``.env`` file in the app root ``app/`` with
-the following content:
+Provide application configuration and create a service account on GCP with a JSON key that has edit permissions.
+You can supply the credentials to the application in two ways:
+
+1. **Path to key file** – Save the key in ``gcp-credentials/gcp-key.json`` (create the folder if necessary) and set ``GOOGLE_APPLICATION_CREDENTIALS`` to that path.
+2. **Direct JSON** – Set ``GCS_SERVICE_ACCOUNT_JSON`` to the JSON content of the service-account key.
+
+Create a ``.env`` file in the project root with at least the following content:
 ```text
 NUM_ROUNDS=1
 GCS_BUCKET_NAME=soteria-federated-learning
+# Either provide a path to the key file
 GOOGLE_APPLICATION_CREDENTIALS=gcp-credentials/gcp-key.json
+# or supply the JSON directly
+# GCS_SERVICE_ACCOUNT_JSON={...}
 ```
 
 ### 4. Set the Google Cloud parameters
