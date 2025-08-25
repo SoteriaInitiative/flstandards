@@ -4,8 +4,8 @@ from flwr.server.strategy import FedProx
 import numpy as np
 import logging
 
-# In case that there is no .env run 5 rounds
-NUM_ROUNDS = int(os.getenv("NUM_ROUNDS"))
+# Default to five training rounds if the environment variable is missing
+NUM_ROUNDS = int(os.getenv("NUM_ROUNDS", "5"))
 MU = 0.01
 SERVER_ADDRESS = os.getenv("SERVER_ADDRESS", "server:8080")
 

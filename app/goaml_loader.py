@@ -18,6 +18,9 @@ def download_and_cache_xml(bank_id: str,
     """Download XML files for a bank, caching them locally."""
     os.makedirs(cache_dir, exist_ok=True)
     storage_client = gs_utils.storage_client
+    if storage_client is None:
+        logger.warning("Google Cloud Storage client unavailable; skipping XML download")
+        return []
     blobs = storage_client.list_blobs(gs_utils.BUCKET_NAME, prefix=prefix)
     paths: List[str] = []
     for blob in blobs:

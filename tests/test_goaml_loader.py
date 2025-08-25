@@ -1,6 +1,7 @@
 import os
 import sys
 import pandas as pd
+import pytest
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(ROOT)
@@ -9,9 +10,12 @@ os.environ["GCS_BUCKET_NAME"] = "soteria-core-data"
 
 from app.data_generator import generate_transaction
 from app.goaml_loader import load_goaml_transactions
+from app.google_storage_utils import gs_utils
 
 
 def test_goaml_structure_matches_json():
+    if gs_utils.storage_client is None:
+        pytest.skip("Google Cloud credentials not configured")
     # generate a single synthetic transaction to capture expected columns
     synthetic = generate_transaction(n_samples=1, bank_id=1)
     df_syn = pd.json_normalize(synthetic, sep="_")
