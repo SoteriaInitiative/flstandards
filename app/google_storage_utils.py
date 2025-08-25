@@ -1,6 +1,5 @@
 from google.cloud import storage
 import os
-from dotenv import load_dotenv
 import json
 import logging
 
@@ -8,8 +7,6 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# Load environment variables
-load_dotenv()
 
 class GoogleStorageUtils:
     def __init__(self):

@@ -83,18 +83,13 @@ If terminal prints ``Your system is ready to brew`` everything worked OK.
 ### 3. Setting project configuration & credentials
  
 Provide application configuration and create a service account on GCP with a JSON key that has edit permissions.
-You can supply the credentials to the application in two ways:
-
-1. **Path to key file** – Save the key in ``gcp-credentials/gcp-key.json`` (create the folder if necessary) and set ``GOOGLE_APPLICATION_CREDENTIALS`` to that path.
-2. **Environment variables** – Export the individual service-account fields (``GCP_PROJECT_ID``, ``GCP_PRIVATE_KEY``\, ``GCP_CLIENT_EMAIL``\, etc.).
+Export the individual service-account fields as environment variables (``GCP_PROJECT_ID``, ``GCP_PRIVATE_KEY``\, ``GCP_CLIENT_EMAIL``\, etc.).
 
 Create a ``.env`` file in the project root with at least the following content:
 ```text
 NUM_ROUNDS=1
-GCS_BUCKET_NAME=soteria-federated-learning
-# Either provide a path to the key file
-# GOOGLE_APPLICATION_CREDENTIALS=gcp-credentials/gcp-key.json
-# or supply the fields directly
+GCS_BUCKET_NAME=soteria-core-data
+GOAML_PREFIX=20250823_191247
 # GCP_PROJECT_ID=your-project
 # GCP_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\n...
 # GCP_CLIENT_EMAIL=your-service-account@your-project.iam.gserviceaccount.com
@@ -105,45 +100,7 @@ GCS_BUCKET_NAME=soteria-federated-learning
 gcloud auth login
 gcloud config set project <PROJECT_ID>
 ```
-Now create the storage bucket specified in the ```.env``` above (only required once):
-```zsh
-gcloud storage buckets create gs://soteria-federated-learning \
-    --location=us-central1 \
-    --default-storage-class=STANDARD
-
-```
-<details>
-    <summary>💡Hint if bucket creation fails:</summary>
-
-You may have created a bucket with the same name. Verify in the GCP console if the
-bucket already exists and if it does, and you like to retain the bucket, rename the bucket 
-in the ```gcloud``` command above and in the ```.env``` file.
-
-</details>
-
-### 5. Run synthetic data generator:
-
-The following assumes that you are in the project root. If you run ```ls``` you should see the files listed in the
-[Project Structure](#Project Structure). In that directory run:
-```zsh
-python app/data_generator.py
-```
-If Google Cloud credentials are not configured, the script still generates the
-JSON files locally but skips uploading them to GCS.
-Now review the synthetic data that has been generated:
-```zsh
-streamlit run app/app.py --server.port=8501 --server.address=127.0.0.1
-```
-
-<details>
-    <summary>💡Hint how to interpret the data:</summary>
-
-Observe that each bank detects only a small set of transaction (red) but the vast majority
-of illicit transactions is not detected (yellow) because these are not part of the local knowledge/scenario pool.
-
-</details>
-
-### 6. Launch federated learning stack
+### 5. Launch federated learning stack
 Ensure that you have started your docker software and then run the federated learning demo:
 ```zsh
 docker compose down --rmi all --volumes --remove-orphans
@@ -161,24 +118,27 @@ docker context use default
 </details>
 
 #### Run server and clients locally (without Docker)
-If Docker is unavailable, the stack can run directly on the host. Start the server:
+If Docker is unavailable, the stack can run directly on the host using the pre-generated goAML data:
 
 ```zsh
 NUM_ROUNDS=1 SERVER_ADDRESS=localhost:8080 python app/server.py
 ```
 
-Then, in a separate shell, launch the four clients:
+Then, in a separate shell, launch the four clients pointed at the dataset in `gs://soteria-core-data/20250823_191247`:
 
 ```zsh
 for i in 1 2 3 4; do \
-    SERVER_ADDRESS=localhost:8080 BANK_ID=$i python app/client.py & \
+    SERVER_ADDRESS=localhost:8080 \
+    GCS_BUCKET_NAME=soteria-core-data \
+    GOAML_PREFIX=20250823_191247 \
+    BANK_ID=$i python app/client.py & \
 done
 wait
 ```
 
 Use `localhost` (not `127.0.0.1`) for `SERVER_ADDRESS` to avoid gRPC proxy errors.
 
-### 7. Observe the model training and evaluation
+### 6. Observe the model training and evaluation
 A lot will scroll through the screen, especially now while the demonstration software is in its early stages. 
 The guide below provides and indication what to watch out for. 
 Observe specifically after the building steps have completed 
@@ -186,7 +146,7 @@ Observe specifically after the building steps have completed
 - One server (```server-1```) has been created
 - Four clients (```flstandards-client1``` to ```flstandards-client4```) were created 
 - The server requests local models from the simulated banks (```Requesting initial parameters```)
-- The clients load the previously generated data (```Successfully downloaded data from Bank...```)
+- The clients load the goAML data from GCS (```Successfully downloaded data from Bank...```)
 - Each client trains a local model (```Model created```)
 - The server uses the first local model to initialize & start model training (```FL starting```, ```fit_round 1```)
 - All the clients submit their local models (```━.../step```)
