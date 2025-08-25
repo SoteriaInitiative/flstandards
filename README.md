@@ -118,25 +118,37 @@ docker context use default
 </details>
 
 #### Run server and clients locally (without Docker)
-If Docker is unavailable, the stack can run directly on the host using the pre-generated goAML data:
+If Docker is unavailable, the stack can run directly on the host using the pre-generated goAML data.
+Export the required environment variables once per shell:
 
 ```zsh
-NUM_ROUNDS=1 python app/server.py
+export GCS_BUCKET_NAME=soteria-core-data
+export GOAML_PREFIX=20250823_191247
+export GOAML_LIMIT=1000        # optional cap on XML files per bank
+export SERVER_ADDRESS=localhost:8080
+export NUM_ROUNDS=1            # number of federated rounds
 ```
 
-Then, in a separate shell, launch the four clients pointed at the dataset in `gs://soteria-core-data/20250823_191247`:
+Start the server:
+
+```zsh
+./run_server.sh
+```
+
+Launch the four clients from a separate shell:
 
 ```zsh
 for i in 1 2 3 4; do \
-    GCS_BUCKET_NAME=soteria-core-data \
-    GOAML_PREFIX=20250823_191247 \
-    BANK_ID=$i python app/client.py & \
+    export BANK_ID=$i \
+    ./run_client.sh & \
 done
 wait
 ```
 
-The server and clients default to `localhost:8080` for their gRPC address. If you need to override this
-behaviour (for example, when running across hosts), set `SERVER_ADDRESS` in the respective command.
+Each client prints its local training and test AUC as well as the global AUC,
+while the server reports aggregated local and global AUC metrics after each round.
+The server and clients default to `localhost:8080` for their gRPC address. To override this
+behaviour (for example, when running across hosts), set `SERVER_ADDRESS` before executing the scripts.
 
 ### 6. Observe the model training and evaluation
 A lot will scroll through the screen, especially now while the demonstration software is in its early stages. 

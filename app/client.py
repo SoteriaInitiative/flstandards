@@ -25,6 +25,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 # Environment variables
 BANK_ID = os.getenv("BANK_ID", "1")
 SERVER_ADDRESS = os.getenv("SERVER_ADDRESS", "localhost:8080")
+GOAML_LIMIT = os.getenv("GOAML_LIMIT")
 
 # Logging setup
 logging.basicConfig(
@@ -37,7 +38,8 @@ logger = logging.getLogger()
 # Load transactions from goAML XML files
 def load_transactions():
     try:
-        transactions = load_goaml_transactions(BANK_ID)
+        limit = int(GOAML_LIMIT) if GOAML_LIMIT else None
+        transactions = load_goaml_transactions(BANK_ID, limit=limit)
         if not transactions:
             logger.error("No transactions loaded from goAML XML")
             return []
@@ -172,6 +174,9 @@ class SimpleClient(fl.client.NumPyClient):
         history = model.fit(X_train, y_train, epochs=30, batch_size=64, verbose=0)
         y_train_pred = model.predict(X_train)
         local_train_auc = roc_auc_score(y_train, y_train_pred)
+        logger.info(
+            f"Client {BANK_ID} local training AUC: {local_train_auc:.4f}"
+        )
         
         return self.get_parameters(config), len(X_train), {"local_train_auc": local_train_auc}
 
@@ -184,6 +189,9 @@ class SimpleClient(fl.client.NumPyClient):
         # TODO: isnt this the same as model.predict(X_test) at the start of the function?
         y_global_pred = model.predict(X_test)
         global_auc = roc_auc_score(y_test_global, y_global_pred)
+        logger.info(
+            f"Client {BANK_ID} local test AUC: {local_auc:.4f}, global test AUC: {global_auc:.4f}"
+        )
 
         # TODO: Is the local_auc the correct return because of the custom weighting or should this be loss?
         return local_auc, len(X_test), {"local_auc": local_auc, "global_auc": global_auc}

@@ -94,6 +94,9 @@ def load_goaml_transactions(bank_id: str,
     """Convenience wrapper to download and parse goAML XML files."""
     if prefix is None:
         prefix = os.getenv("GOAML_PREFIX", "20250823_191247")
+    if limit is None:
+        env_limit = os.getenv("GOAML_LIMIT")
+        limit = int(env_limit) if env_limit else None
     files = download_and_cache_xml(bank_id, prefix, cache_dir=cache_dir, limit=limit)
     if not files:
         logger.error("No XML files found for bank %s", bank_id)
