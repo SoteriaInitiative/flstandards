@@ -7,10 +7,14 @@ import logging
 # Default to five training rounds if the environment variable is missing
 NUM_ROUNDS = int(os.getenv("NUM_ROUNDS", "5"))
 MU = 0.01
-SERVER_ADDRESS = os.getenv("SERVER_ADDRESS", "server:8080")
+SERVER_ADDRESS = os.getenv("SERVER_ADDRESS", "localhost:8080")
 
 # Set up logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    force=True,
+)
 logger = logging.getLogger()
 
 def aggregate_fit_metrics(results):

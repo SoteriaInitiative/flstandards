@@ -24,10 +24,14 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 # Environment variables
 BANK_ID = os.getenv("BANK_ID", "1")
-SERVER_ADDRESS = os.getenv("SERVER_ADDRESS", "server:8080")
+SERVER_ADDRESS = os.getenv("SERVER_ADDRESS", "localhost:8080")
 
 # Logging setup
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    force=True,
+)
 logger = logging.getLogger()
 
 # Load transactions from goAML XML files

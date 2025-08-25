@@ -121,14 +121,13 @@ docker context use default
 If Docker is unavailable, the stack can run directly on the host using the pre-generated goAML data:
 
 ```zsh
-NUM_ROUNDS=1 SERVER_ADDRESS=localhost:8080 python app/server.py
+NUM_ROUNDS=1 python app/server.py
 ```
 
 Then, in a separate shell, launch the four clients pointed at the dataset in `gs://soteria-core-data/20250823_191247`:
 
 ```zsh
 for i in 1 2 3 4; do \
-    SERVER_ADDRESS=localhost:8080 \
     GCS_BUCKET_NAME=soteria-core-data \
     GOAML_PREFIX=20250823_191247 \
     BANK_ID=$i python app/client.py & \
@@ -136,7 +135,8 @@ done
 wait
 ```
 
-Use `localhost` (not `127.0.0.1`) for `SERVER_ADDRESS` to avoid gRPC proxy errors.
+The server and clients default to `localhost:8080` for their gRPC address. If you need to override this
+behaviour (for example, when running across hosts), set `SERVER_ADDRESS` in the respective command.
 
 ### 6. Observe the model training and evaluation
 A lot will scroll through the screen, especially now while the demonstration software is in its early stages. 
