@@ -21,7 +21,7 @@ def test_goaml_structure_matches_json():
     df_syn = pd.json_normalize(synthetic, sep="_")
 
     # load a single XML file worth of transactions
-    xml_transactions = load_goaml_transactions(bank_id="1", prefix="20250823_191247", cache_dir="test_xml_cache", limit=1)
+    xml_transactions = load_goaml_transactions(bank_id="1", prefix=os.env("GOAML_PREFIX"), cache_dir="test_xml_cache", limit=1)
     assert xml_transactions, "No XML transactions loaded"
     df_xml = pd.json_normalize(xml_transactions, sep="_")
 

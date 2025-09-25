@@ -1,9 +1,11 @@
 import os
 import flwr as fl
+from dotenv import load_dotenv
 from flwr.server.strategy import FedProx
 import numpy as np
 import logging
 
+load_dotenv()
 # Default to five training rounds if the environment variable is missing
 NUM_ROUNDS = int(os.getenv("NUM_ROUNDS", "5"))
 MU = 0.01

@@ -3,6 +3,7 @@ import flwr as fl
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+from dotenv import load_dotenv
 from tensorflow.keras import backend as K
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
@@ -10,6 +11,8 @@ import logging
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from goaml_loader import load_goaml_transactions
+
+load_dotenv()
 
 # Custom weighted loss function: Overweight known true positives X 100
 def weighted_loss(y_true, y_pred):

@@ -50,6 +50,8 @@ brew install --cask docker
 brew install --cask google-cloud-sdk
 pip install -r app/requirements.txt
 ```
+> NOTE: If you like to fetch the latest Soteria Initiative goAML tools install from the feature branch with:
+> ```pip install git+https://github.com/SoteriaInitiative/coredata.git@feat/go_aml_generation```
 <details>
     <summary>💡Hint if you don't have 'brew':</summary>
 
@@ -85,14 +87,14 @@ If terminal prints ``Your system is ready to brew`` everything worked OK.
 Provide application configuration and create a service account on GCP with a JSON key that has edit permissions.
 Export the individual service-account fields as environment variables (``GCP_PROJECT_ID``, ``GCP_PRIVATE_KEY``\, ``GCP_CLIENT_EMAIL``\, etc.).
 
-Create a ``.env`` file in the project root with at least the following content:
+Create a ``.env`` file in the project root with at least the following content or ``export`` these values:
 ```text
 NUM_ROUNDS=1
 GCS_BUCKET_NAME=soteria-core-data
-GOAML_PREFIX=20250823_191247
-# GCP_PROJECT_ID=your-project
-# GCP_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\n...
-# GCP_CLIENT_EMAIL=your-service-account@your-project.iam.gserviceaccount.com
+GCP_PROJECT_ID=your-project
+GCP_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\n...
+GCP_CLIENT_EMAIL=your-service-account@your-project.iam.gserviceaccount.com
+GCP_CLIENT_ID=123456789
 ```
 
 ### 4. Set the Google Cloud parameters
@@ -100,7 +102,35 @@ GOAML_PREFIX=20250823_191247
 gcloud auth login
 gcloud config set project <PROJECT_ID>
 ```
-### 5. Launch federated learning stack
+### 5. Create the training data
+First create the storage bucket and replace `us-central1` and `soteria-core-data` with your desired location:
+```zsh
+gcloud storage buckets create gs://soteria-core-data \
+    --location=us-central1 \
+    --default-storage-class=STANDARD
+
+```
+Run a synthetic data generator and record the Storage bucket folder name in the `GOAML_PREFIX` environment variable
+or place goAML XML files in a folder in the bucket created above.
+```zsh
+python tools/generate.py
+```
+
+Export the storage bucket folder name so that it becomes available for the federated learning step late on.
+```zsh
+export GOAML_PREFIX=the-storage-bucket-folder-name-reported-by-generate-py
+```
+
+To review the raw data on a terminal use the `query.py` utility. Examples below:
+```zsh
+python tools/query.py receivers
+python tools/query.py labels --local 1 --global 1
+python tools/query.py transactions "Jessica" "Hale" "1948-11-07T00:00:00" --bank "CH National"
+python tools/query.py multi-bank
+python tools/query.py missing-ubos
+```
+
+### 6. Launch federated learning training and inference
 Ensure that you have started your docker software and then run the federated learning demo:
 ```zsh
 docker compose down --rmi all --volumes --remove-orphans
