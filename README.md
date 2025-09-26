@@ -50,6 +50,8 @@ brew install --cask docker
 brew install --cask google-cloud-sdk
 pip install -r app/requirements.txt
 ```
+> NOTE: If you like to fetch the latest Soteria Initiative goAML tools install from the feature branch with:
+> ```pip install git+https://github.com/SoteriaInitiative/coredata.git@feat/go_aml_generation```
 <details>
     <summary>💡Hint if you don't have 'brew':</summary>
 
@@ -82,15 +84,17 @@ If terminal prints ``Your system is ready to brew`` everything worked OK.
 
 ### 3. Setting project configuration & credentials
  
-Provide application configuration and create a service account on GCP and add a JSON key with edit permissions.
-Safe the key in the project root to ``gcp-credentials/gcp-key.json`` - create the gcp-credentials folder if you don't have it.
-Next, provide the proper application configurations. 
-Create a ``.env`` file in the app root ``app/`` with
-the following content:
+Provide application configuration and create a service account on GCP with a JSON key that has edit permissions.
+Export the individual service-account fields as environment variables (``GCP_PROJECT_ID``, ``GCP_PRIVATE_KEY``\, ``GCP_CLIENT_EMAIL``\, etc.).
+
+Create a ``.env`` file in the project root with at least the following content or ``export`` these values:
 ```text
 NUM_ROUNDS=1
-GCS_BUCKET_NAME=soteria-federated-learning
-GOOGLE_APPLICATION_CREDENTIALS=gcp-credentials/gcp-key.json
+GCS_BUCKET_NAME=soteria-core-data
+GCP_PROJECT_ID=your-project
+GCP_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\n...
+GCP_CLIENT_EMAIL=your-service-account@your-project.iam.gserviceaccount.com
+GCP_CLIENT_ID=123456789
 ```
 
 ### 4. Set the Google Cloud parameters
@@ -98,43 +102,35 @@ GOOGLE_APPLICATION_CREDENTIALS=gcp-credentials/gcp-key.json
 gcloud auth login
 gcloud config set project <PROJECT_ID>
 ```
-Now create the storage bucket specified in the ```.env``` above (only required once):
+### 5. Create the training data
+First create the storage bucket and replace `us-central1` and `soteria-core-data` with your desired location:
 ```zsh
-gcloud storage buckets create gs://soteria-federated-learning \
+gcloud storage buckets create gs://soteria-core-data \
     --location=us-central1 \
     --default-storage-class=STANDARD
 
 ```
-<details>
-    <summary>💡Hint if bucket creation fails:</summary>
-
-You may have created a bucket with the same name. Verify in the GCP console if the
-bucket already exists and if it does, and you like to retain the bucket, rename the bucket 
-in the ```gcloud``` command above and in the ```.env``` file.
-
-</details>
-
-### 5. Run synthetic data generator:
-
-The following assumes that you are in the project root. If you run ```ls``` you should see the files listed in the
-[Project Structure](#Project Structure). In that directory run:
+Run a synthetic data generator and record the Storage bucket folder name in the `GOAML_PREFIX` environment variable
+or place goAML XML files in a folder in the bucket created above.
 ```zsh
-python app/data_generator.py
-```
-Now review the synthetic data that has been generated:
-```zsh
-streamlit run app/app.py --server.port=8501 --server.address=127.0.0.1
+python tools/generate.py
 ```
 
-<details>
-    <summary>💡Hint how to interpret the data:</summary>
+Export the storage bucket folder name so that it becomes available for the federated learning step late on.
+```zsh
+export GOAML_PREFIX=the-storage-bucket-folder-name-reported-by-generate-py
+```
 
-Observe that each bank detects only a small set of transaction (red) but the vast majority
-of illicit transactions is not detected (yellow) because these are not part of the local knowledge/scenario pool.
+To review the raw data on a terminal use the `query.py` utility. Examples below:
+```zsh
+python tools/query.py receivers
+python tools/query.py labels --local 1 --global 1
+python tools/query.py transactions "Jessica" "Hale" "1948-11-07T00:00:00" --bank "CH National"
+python tools/query.py multi-bank
+python tools/query.py missing-ubos
+```
 
-</details>
-
-### 6. Launch federated learning stack
+### 6. Launch federated learning training and inference
 Ensure that you have started your docker software and then run the federated learning demo:
 ```zsh
 docker compose down --rmi all --volumes --remove-orphans
@@ -151,7 +147,40 @@ docker context use default
 ```
 </details>
 
-### 7. Observe the model training and evaluation
+#### Run server and clients locally (without Docker)
+If Docker is unavailable, the stack can run directly on the host using the pre-generated goAML data.
+Export the required environment variables once per shell:
+
+```zsh
+export GCS_BUCKET_NAME=soteria-core-data
+export GOAML_PREFIX=20250823_191247
+export GOAML_LIMIT=1000        # optional cap on XML files per bank
+export SERVER_ADDRESS=localhost:8080
+export NUM_ROUNDS=1            # number of federated rounds
+```
+
+Start the server:
+
+```zsh
+./run_server.sh
+```
+
+Launch the four clients from a separate shell:
+
+```zsh
+for i in 1 2 3 4; do \
+    export BANK_ID=$i \
+    ./run_client.sh & \
+done
+wait
+```
+
+Each client prints its local training and test AUC as well as the global AUC,
+while the server reports aggregated local and global AUC metrics after each round.
+The server and clients default to `localhost:8080` for their gRPC address. To override this
+behaviour (for example, when running across hosts), set `SERVER_ADDRESS` before executing the scripts.
+
+### 6. Observe the model training and evaluation
 A lot will scroll through the screen, especially now while the demonstration software is in its early stages. 
 The guide below provides and indication what to watch out for. 
 Observe specifically after the building steps have completed 
@@ -159,7 +188,7 @@ Observe specifically after the building steps have completed
 - One server (```server-1```) has been created
 - Four clients (```flstandards-client1``` to ```flstandards-client4```) were created 
 - The server requests local models from the simulated banks (```Requesting initial parameters```)
-- The clients load the previously generated data (```Successfully downloaded data from Bank...```)
+- The clients load the goAML data from GCS (```Successfully downloaded data from Bank...```)
 - Each client trains a local model (```Model created```)
 - The server uses the first local model to initialize & start model training (```FL starting```, ```fit_round 1```)
 - All the clients submit their local models (```━.../step```)
