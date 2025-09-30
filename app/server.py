@@ -1,15 +1,22 @@
 import os
 import flwr as fl
+from dotenv import load_dotenv
 from flwr.server.strategy import FedProx
 import numpy as np
 import logging
 
-# In case that there is no .env run 5 rounds
-NUM_ROUNDS = int(os.getenv("NUM_ROUNDS"))
-MU = 0.01 
+load_dotenv()
+# Default to five training rounds if the environment variable is missing
+NUM_ROUNDS = int(os.getenv("NUM_ROUNDS", "5"))
+MU = 0.01
+SERVER_ADDRESS = os.getenv("SERVER_ADDRESS", "localhost:8080")
 
 # Set up logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    force=True,
+)
 logger = logging.getLogger()
 
 def aggregate_fit_metrics(results):
@@ -52,9 +59,11 @@ def create_strategy():
     )
 
 if __name__ == "__main__":
-    logger.info(f"Starting FedProx server with {NUM_ROUNDS} rounds (mu={MU})")
+    logger.info(
+        f"Starting FedProx server at {SERVER_ADDRESS} with {NUM_ROUNDS} rounds (mu={MU})"
+    )
     fl.server.start_server(
-        server_address="server:8080",
+        server_address=SERVER_ADDRESS,
         config=fl.server.ServerConfig(num_rounds=NUM_ROUNDS),
         strategy=create_strategy(),
     )

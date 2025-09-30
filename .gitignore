@@ -173,3 +173,4 @@ cython_debug/
 
 *.pkl
 gcp-credentials/
+/.goaml_cache/
