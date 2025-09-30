@@ -1,0 +1,11 @@
+boto3
+flwr==1.7.0
+google-cloud-storage
+jupyter
+numpy
+python-dotenv
+requests
+scikit-learn
+streamlit
+tensorflow
+watchdog
